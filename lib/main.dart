@@ -16,8 +16,144 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const DelayedAnimation(title: 'Flutter Demo Home Page'),
+      home: const ParentingAnimations(title: 'Flutter Demo Home Page'),
     );
+  }
+}
+
+class ParentingAnimations extends StatefulWidget {
+  const ParentingAnimations({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<ParentingAnimations> createState() => _ParentingAnimationsState();
+}
+
+class _ParentingAnimationsState extends State<ParentingAnimations>
+    with TickerProviderStateMixin {
+  Animation animation = const AlwaysStoppedAnimation(0.0);
+
+  Animation childAnimation = const AlwaysStoppedAnimation(0.0);
+
+  late AnimationController animationController;
+  @override
+  void initState() {
+    super.initState();
+
+    animationController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+
+    animation = Tween(begin: -0.25, end: 0.0).animate(CurvedAnimation(
+      parent: animationController,
+      curve: Curves.easeIn,
+    ));
+
+    childAnimation = Tween(begin: 0, end: 125.0).animate(
+        CurvedAnimation(parent: animationController, curve: Curves.easeIn));
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+    animationController.forward();
+
+    return AnimatedBuilder(
+        animation: animationController,
+        builder: (BuildContext context, Widget? child) {
+          return Scaffold(
+              appBar: AppBar(
+                title: Text(widget.title),
+              ),
+              body: Align(
+                alignment: Alignment.center,
+                child: Transform(
+                  transform: Matrix4.translationValues(
+                      animation.value * width, 0.0, 0.0),
+                  child: Container(
+                    child: Center(
+                      child: AnimatedBuilder(
+                          animation: childAnimation,
+                          builder: (BuildContext context, Widget? child) {
+                            print("childAnimation.value");
+                            print(childAnimation.value);
+                            return Center(
+                              child: Container(
+                                padding: const EdgeInsets.all(10.0),
+                                height: childAnimation.value * 2,
+                                width: 300,
+                                child: ListView(
+                                  shrinkWrap: true,
+                                  children: [
+                                    Center(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(5.0),
+                                        child: const Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              'Login',
+                                              style: TextStyle(
+                                                  fontSize: 15.0,
+                                                  fontWeight: FontWeight.bold),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 2,
+                                    ),
+                                    const TextField(
+                                      style: TextStyle(
+                                          fontSize: 10.0,
+                                          fontWeight: FontWeight.bold),
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'Username',
+                                      ),
+                                      strutStyle: StrutStyle(
+                                        fontSize: 10.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 2,
+                                    ),
+                                    const TextField(
+                                      decoration: InputDecoration(
+                                        border: OutlineInputBorder(),
+                                        labelText: 'Password',
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 2,
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        print("Login");
+                                      },
+                                      child: const Text('Login'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }),
+                    ),
+                  ),
+                ),
+              ));
+        });
   }
 }
 
@@ -55,11 +191,13 @@ class _DelayedAnimationState extends State<DelayedAnimation>
 
     delayAnimated = Tween(begin: -1.0, end: 0.0).animate(CurvedAnimation(
       parent: animationController,
+      //a animação vai começar após 50% dos x segundos de duração
       curve: const Interval(0.5, 1.0, curve: Curves.fastOutSlowIn),
     ));
 
     muchDelayAnimated = Tween(begin: -1.0, end: 0.0).animate(CurvedAnimation(
       parent: animationController,
+      //a animação vai começar após 80% dos x segundos de duração
       curve: const Interval(0.8, 1.0, curve: Curves.fastOutSlowIn),
     ));
 
