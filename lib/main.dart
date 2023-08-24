@@ -48,11 +48,11 @@ class _ParentingAnimationsState extends State<ParentingAnimations>
 
     animation = Tween(begin: -0.25, end: 0.0).animate(CurvedAnimation(
       parent: animationController,
-      curve: Curves.easeIn,
+      curve: Curves.fastOutSlowIn,
     ));
 
-    childAnimation = Tween(begin: 0, end: 125.0).animate(
-        CurvedAnimation(parent: animationController, curve: Curves.easeIn));
+    childAnimation = Tween(begin: 0.0, end: 125.0).animate(CurvedAnimation(
+        parent: animationController, curve: Curves.fastOutSlowIn));
   }
 
   @override
@@ -89,7 +89,7 @@ class _ParentingAnimationsState extends State<ParentingAnimations>
                               child: Container(
                                 padding: const EdgeInsets.all(10.0),
                                 height: childAnimation.value * 2,
-                                width: 300,
+                                width: childAnimation.value * 2,
                                 child: ListView(
                                   shrinkWrap: true,
                                   children: [
