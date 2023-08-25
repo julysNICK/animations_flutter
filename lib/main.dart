@@ -16,8 +16,90 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const ParentingAnimations(title: 'Flutter Demo Home Page'),
+      home: const TransformingExample(title: 'Flutter Demo Home Page'),
     );
+  }
+}
+
+class TransformingExample extends StatefulWidget {
+  const TransformingExample({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<TransformingExample> createState() => _TransformingExampleState();
+}
+
+class _TransformingExampleState extends State<TransformingExample>
+    with TickerProviderStateMixin {
+  Animation animation = const AlwaysStoppedAnimation(0.0);
+
+  Animation transformationAnim = const AlwaysStoppedAnimation(0.0);
+
+  late AnimationController animationController;
+  @override
+  void initState() {
+    super.initState();
+
+    animationController = AnimationController(
+      duration: const Duration(seconds: 5),
+      vsync: this,
+    );
+
+    animation = Tween(begin: 10.0, end: 200.0).animate(CurvedAnimation(
+      parent: animationController,
+      curve: Curves.fastOutSlowIn,
+    ));
+
+    transformationAnim = BorderRadiusTween(
+            begin: BorderRadius.circular(125.0),
+            end: BorderRadius.circular(0.0))
+        .animate(CurvedAnimation(
+            parent: animationController, curve: Curves.slowMiddle));
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+    animationController.forward();
+
+    return AnimatedBuilder(
+        animation: animationController,
+        builder: (BuildContext context, Widget? child) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(widget.title),
+            ),
+            body: Center(
+              child: Stack(
+                children: [
+                  Center(
+                    child: Container(
+                      alignment: Alignment.bottomCenter,
+                      width: animation.value,
+                      height: animation.value,
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurple,
+                        borderRadius: transformationAnim.value,
+                        image: const DecorationImage(
+                          image: NetworkImage(
+                              'https://images.unsplash.com/photo-1682685797332-e678a04f8a64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
   }
 }
 
@@ -83,8 +165,6 @@ class _ParentingAnimationsState extends State<ParentingAnimations>
                       child: AnimatedBuilder(
                           animation: childAnimation,
                           builder: (BuildContext context, Widget? child) {
-                            print("childAnimation.value");
-                            print(childAnimation.value);
                             return Center(
                               child: Container(
                                 padding: const EdgeInsets.all(10.0),
