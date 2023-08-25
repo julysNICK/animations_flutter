@@ -16,8 +16,204 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const TransformingExample(title: 'Flutter Demo Home Page'),
+      home: const MixingAnimationUi(title: 'Flutter Demo Home Page'),
     );
+  }
+}
+
+class MixingAnimationUi extends StatefulWidget {
+  const MixingAnimationUi({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<MixingAnimationUi> createState() => _MixingAnimationUiState();
+}
+
+class _MixingAnimationUiState extends State<MixingAnimationUi>
+    with TickerProviderStateMixin {
+  Animation animation = const AlwaysStoppedAnimation(0.0);
+
+  late AnimationController animationController;
+  @override
+  void initState() {
+    super.initState();
+
+    animationController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+
+    animation = Tween(begin: 0.0, end: -0.40).animate(CurvedAnimation(
+      parent: animationController,
+      curve: Curves.fastOutSlowIn,
+    ));
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+
+    return AnimatedBuilder(
+        animation: animationController,
+        builder: (BuildContext context, Widget? child) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(widget.title),
+            ),
+            body: Center(
+              child: Stack(
+                children: [
+                  Center(
+                    child: Container(
+                      padding: const EdgeInsets.all(10.0),
+                      width: 350.0,
+                      height: 200.0,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              print("Click");
+                            },
+                            child: const Text(
+                              "Login",
+                              style: TextStyle(
+                                  fontSize: 30.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              print("Click");
+                            },
+                            child: const Text(
+                              "Register",
+                              style: TextStyle(
+                                  fontSize: 30.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        animationController.forward();
+                      },
+                      onDoubleTap: () {
+                        animationController.reverse();
+                      },
+                      child: Container(
+                        alignment: Alignment.bottomCenter,
+                        width: 350.0,
+                        height: 200.0,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          image: const DecorationImage(
+                            image: NetworkImage(
+                                'https://images.unsplash.com/photo-1682685797332-e678a04f8a64?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80'),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        transform: Matrix4.translationValues(
+                            0.0, animation.value * width, 0.0),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+}
+
+class IntAnimationsValuesChange extends StatefulWidget {
+  const IntAnimationsValuesChange({super.key, required this.title});
+
+  final String title;
+
+  @override
+  State<IntAnimationsValuesChange> createState() =>
+      _IntAnimationsValuesChangeState();
+}
+
+class _IntAnimationsValuesChangeState extends State<IntAnimationsValuesChange>
+    with TickerProviderStateMixin {
+  Animation animation = const AlwaysStoppedAnimation(0.0);
+
+  late AnimationController animationController;
+  @override
+  void initState() {
+    super.initState();
+
+    animationController = AnimationController(
+      duration: const Duration(seconds: 5),
+      vsync: this,
+    );
+
+    animation = IntTween(begin: 0, end: 255).animate(CurvedAnimation(
+      parent: animationController,
+      curve: Curves.fastOutSlowIn,
+    ));
+    animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+    animationController.forward();
+
+    return AnimatedBuilder(
+        animation: animationController,
+        builder: (BuildContext context, Widget? child) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(widget.title),
+            ),
+            body: Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Loading.....',
+                  style: TextStyle(
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepPurple),
+                ),
+                Text(
+                  animation.value.toString(),
+                  style: const TextStyle(
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.deepPurple),
+                )
+              ],
+            )),
+          );
+        });
   }
 }
 
